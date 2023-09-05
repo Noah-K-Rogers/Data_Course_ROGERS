@@ -12,7 +12,7 @@
 
 # "COMMENTS"
 
-# This hastag symbol "#" denotes a comment. That means the computer will ignore everything on a line after it
+# This hashtag symbol "#" denotes a comment. That means the computer will ignore everything on a line after it
 # That's why each of these lines begins with a "#"
 # It's good practice to use these comments to help lay out your plan in a readable manner
 # Or just to give some useful information
@@ -44,10 +44,8 @@ bob >= jane
 bob == jane
 jane == 10
 (jane == 10) + 1   #!???
-
 # The values "TRUE" and "FALSE" are special reserved values. You should never use them as a name for an object!!!
 # This goes for numbers as well. The number "3" cannot be assigned to any other value, for obvious reasons.
-
 
 
 ###############
@@ -63,15 +61,18 @@ jane == 10
 # That stands for "concatenate" and allows you to enter a series of values to be saved to a single object:
 billy = c(2,3,4,5,6) # "billy" is now a NUMERIC VECTOR of 5 values
 # c() requires you to separate the various elements with a comma
-
+is.vector(billy) #numeric vector
 # This works for STRINGS as well. Strings are made up of characters
 suzy = c("This","is","a","character","vector") # notice how each string is enclosed in quotes. That tells R it is a string
 
 # Think of these values (billy and suzy) like lists.  They have inherent order, so we can access any part of them:
 
-billy[1] # The brackets [] allow you to pick one or more elements from an object.  Here, we asked for the first element
+billy[c(1,3)] # The brackets [] allow you to pick one or more elements from an object.  Here, we asked for the first element
 # What value would billy[3] give you?
+tommy <- c(1,2,3,4,5)
 
+billy + tommy
+suzy[4:5]
 # If our vectors are the same lengths, we can easily combine them to form "2-dimensional" data. Most data you
 # want to explore will probably be 2-dimensional. If you have a series of observations and measured several variables
 # during each observation, that is 2-dimensional. Let's input some fake biological data to take a look:
@@ -98,7 +99,7 @@ data
 # So to get the element in row 1, column 3 we write:
 
 data[1,3]
-
+#[row,column]
 # This kind of access is very useful. To add the mass of the first 5 flies we caught, you can write:
 
 data[1,3] + data[2,3] + data[3,3] + data[4,3] + data[5,3]
