@@ -28,8 +28,8 @@ vector1 <- c(1,2,3,4,5,6,7,8,9,10)
 vector2 <- c(5,6,7,8,4,3,2,1,3,10)
 vector3 <- letters # letters and LETTERS are built-in vectors
 
-vector1 + 5
-vector2 / 2
+vector1[3] + 5
+vector2[2] / 2
 vector1*vector2
 
 vector3 + 1 # can't add 1 to "a"
@@ -50,7 +50,8 @@ vector1 %in% 1:6
 # Data Frames ####
 # R has quite a few built-in data sets
 data("iris") # load it like this
-
+class(iris)
+class(vector3)
 # For built-in data, there's often a 'help file'
 ?iris
 
@@ -114,6 +115,7 @@ class(nums_factor) # check it
 # convert numeric to character
 as.character(vector1)
 as.character(vector1) + 5
+as.character(vector1+5)
 
 # convert character to numeric
 as.numeric(vector3)
@@ -138,7 +140,7 @@ median(vector1)
 mean(vector1)
 range(vector1)
 summary(vector1)
-
+table(nums)
 # cumulative functions
 cumsum(vector1)
 cumprod(vector1)
@@ -147,23 +149,22 @@ cummax(vector1)
 
 # even has built-in statistical distributions (we will see more of these later)
 dbinom(50,100,.5) # probability of getting exactly 50 heads out of 100 coin flips
-
+?dbinom()
 
 
 
 # YOUR REMAINING HOMEWORK ASSIGNMENT (Fill in with code) ####
-
+dat <- iris
 # 1.  Get a subset of the "iris" data frame where it's just even-numbered rows
 
 #seq(2,150,2) # here's the code to get a list of the even numbers between 2 and 150
 
-even_iris <- iris[seq(2,150,2),]
+even_iris <- dat[seq(2,150,2),]
 
 # 2.  Create a new object called iris_chr which is a copy of iris, except where every column is a character class
-iris_chr <- iris
-iris_chr[] <- data.frame(lapply(iris, as.character))
+iris_chr <- data.frame(lapply(dat, as.character))
 # 3.  Create a new numeric vector object named "Sepal.Area" which is the product of Sepal.Length and Sepal.Width
-iris$Sepal.Area <- iris$Sepal.Length*iris$Sepal.Width
+dat$Sepal.Area <- dat$Sepal.Length*dat$Sepal.Width
 
 
 # 4.  Add Sepal.Area to the iris data frame as a new column
@@ -172,7 +173,7 @@ iris$Sepal.Area <- iris$Sepal.Length*iris$Sepal.Width
 
 # 5.  Create a new dataframe that is a subset of iris using only rows where Sepal.Area is greater than 20 
       # (name it big_area_iris)
-big_area_iris <- iris[iris$Sepal.Area > 20,]
+big_area_iris <- dat[dat$Sepal.Area > 20,]
 
 
 # 6.  Upload the last numbered section of this R script (with all answers filled in and tasks completed) 
