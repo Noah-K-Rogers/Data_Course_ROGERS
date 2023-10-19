@@ -1,2 +1,2 @@
 # Data_Course_ROGERS
-# 10 commits achieved
+# My files for the intro R class at UVU
