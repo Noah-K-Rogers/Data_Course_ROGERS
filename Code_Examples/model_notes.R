@@ -9,7 +9,7 @@ penguins %>%
   geom_smooth(method="lm",aes(linetype = sex),se=FALSE)
   coord_cartesian(xlim = c(0,60))
 
-#make linear regresssion of this plot
+#make linear regression of this plot
 
 penguins %>% 
   ggplot(aes(y=bill_depth_mm,x=bill_length_mm))+
@@ -58,7 +58,7 @@ grad<- read_csv("./Data/GradSchool_Admissions.csv")
 #logistic -> family=binomial
 grad <- grad %>% mutate(admit = as.logical(admit))
 m7 <- glm(data=grad,formula=admit~gre*gpa+rank,family = "binomial")
-summary(m6)
+summary(m7)
 library(modelr)
 compare_performance(m6,m7,step) %>% plot
 add_predictions(grad,m6,type = "response") %>%

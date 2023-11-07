@@ -1,0 +1,145 @@
+---
+title: "Assignment_9"
+output: html_document
+date: "`r Sys.Date()`"
+---
+
+```{r setup, include=FALSE, message=FALSE,}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+```
+
+## Grad School Admissions Modeling
+I will be looking at and modeling a dataset of gradschool admissions.
+First, I'll need to load in some packages.
+
+```{r}
+library(tidyverse)
+library(modelr)
+library(easystats)
+library(GGally)
+```
+Then read in the data and look at it a bit.
+
+```{r}
+grad <- read_csv("../../Data/GradSchool_Admissions.csv")
+grad <- grad %>% mutate(admit = as.logical(admit)) %>% mutate(rank = factor(rank))
+glimpse(grad)
+```
+### Plots
+I'll make some plots of the data.
+
+First, a plot of the acceptance rate by rank of the undergrad institution (1 is best).
+```{r}
+grad %>% group_by(rank) %>% 
+  summarise(prop = mean(admit)) %>%
+  ggplot(aes(x=as.numeric(rank),y = prop)) +
+  geom_point()+
+  geom_line()+
+  theme_minimal()+
+  xlab("Rank")+
+  ylab("Admittance")
+```
+
+
+As we can see, it has a significant affect on acceptance.
+
+
+Second a plot of the acceptance by gre for each rank.
+```{r}
+
+
+
+temp <- grad %>% group_by(gre,rank) %>% 
+  summarise(prop = mean(admit)) 
+temp %>% ggplot(aes(x=gre,y = prop,color = rank)) +
+  geom_point()+
+  theme_minimal()+
+  geom_smooth(method = "lm", se=FALSE)+
+  ylim(0,1)+
+  ylab("Admittance")
+```
+
+
+
+This plot is showing us both an effect of gre on admittance, and a change in that effect based on the rank.
+
+
+
+Third, a similar plot for GPA.
+```{r}
+
+
+
+temp <- grad %>% mutate(gpa = trunc(gpa*10)/10) %>% group_by(gpa,rank) %>% 
+  summarise(prop = mean(admit)) 
+temp %>% ggplot(aes(x=gpa,y = prop,color = rank)) +
+  geom_point()+
+  theme_minimal()+
+  geom_smooth(method = "lm", se=FALSE)+
+  ylim(0,1)+
+  ylab("Admittance")
+```
+
+The effect of the gpa seems to stay somewhat consistent across ranks.
+
+### Modeling
+
+To start off I'll make a bunch of models of varying complexity with the first one being a potentially good model based on the earlier observations.
+
+```{r}
+mod_guess <- glm(admit~(rank*gre)+gpa,data = grad, family = "binomial")
+mod_simple <- glm(admit~rank,data = grad, family = "binomial")
+mod_mid <- glm(admit~rank+gre+gpa,data = grad, family = "binomial")
+mod_complex <- glm(admit~rank*gre*gpa,data = grad, family = "binomial")
+step <- MASS::stepAIC(mod_complex, trace=0)
+mod_step <- glm(formula = step$formula,data=grad, family = "binomial")
+```
+Now we can compare the models.
+
+```{r}
+comparison <- compare_performance(mod_guess,mod_simple,mod_mid,mod_complex,mod_step,rank = TRUE)
+comparison
+plot(comparison)
+```
+
+Looking at this, my guessed model wasn't very good but honestly none of the models are great. The r2 is pretty low for all of them but out of the models the mod_step is the best by performance score. 
+
+Lets examine the model a little bit more.
+```{r}
+mod_step %>% model_parameters(type = "response")
+mod_step$formula
+```
+
+According to these, the only interaction that was significant enough to keep was gre * gpa.
+It predictably states that higher gpa, gre and school rank make you more likely to get accepted into a grad school.
+Now I can add the predictions to the model and see what the graphs look like.
+```{r}
+grad <- add_predictions(grad, mod_step, type = "response")
+grad %>% ggplot(aes(x=gpa,y=as.numeric(pred),color = rank))+
+  geom_point()+
+  geom_smooth(method = "lm")+
+  theme_minimal()+
+  ylab("Admittance Predictions")
+grad %>% ggplot(aes(x=gre,y=as.numeric(pred),color = rank))+
+  geom_point()+
+  geom_smooth(method = "lm")+
+  theme_minimal()+
+  ylab("Admittance Predictions")
+```
+
+These plots show that rank seems to be the most important factor for admittance at least based on my model. It's also interesting to note that the higher the GPA the less scattered our predictions are.
+
+
+
+
+
+
+
+
+
+
+
