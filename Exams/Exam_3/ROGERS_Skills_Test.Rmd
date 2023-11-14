@@ -1,0 +1,95 @@
+---
+title: "ROGERS_Skills_Test"
+output: html_document
+date: "`r Sys.Date()`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+```
+
+## Exam 3 
+#### Task 1
+First we'll load the dataframe and look at it.
+```{r}
+library(tidyverse)
+library(janitor)
+df <- read_csv("FacultySalaries_1995.csv") %>% clean_names()
+glimpse(df)
+names(df)
+```
+then we'll need to clean the dataframe into a usable state
+```{r,message=FALSE}
+source("../../Code_Examples/pivot_multiple.R")
+clean <- df %>% pivot_longer_multiple(c("salary","comp","num"),exclude = "num_faculty_all",fix_names = TRUE) %>% 
+  mutate(rank = case_when(names == "1"~"full",
+                                    names == "2"~"assoc",
+                                    names == "3"~"assist",
+                                    names == "4"~"all")) %>% 
+  select(-names) %>% 
+  mutate(tier = case_when(tier == "I"~ "I",
+                              tier == "IIA"~ "IIA",
+                              tier == "IIB"~ "IIB",
+                              tier == "VIIB"~ "IIB")) %>% 
+  mutate(tier = factor(tier))%>% 
+  subset(rank %in% c("full","assist","assoc")) 
+```
+
+Then we can make the graph
+```{r, warning=FALSE}
+clean %>% 
+  ggplot(aes(x=rank,y=salary,fill = rank)) + 
+  geom_boxplot()+
+  facet_wrap(clean$tier)+
+  theme_minimal()
+```
+
+#### Task 2
+
+Then we have to make an ANOVA model of the data.
+```{r}
+summary(aov(salary~state + tier+ rank, data = clean))
+```
+
+#### Task 3
+
+The rest of the test will deal with a different dataset so we will read in and clean the new data
+```{r}
+df2 <- read_csv("./Juniper_Oils.csv")
+clean2 <- df2 %>% pivot_longer(c("alpha-pinene","para-cymene","alpha-terpineol","cedr-9-ene","alpha-cedrene","beta-cedrene","cis-thujopsene","alpha-himachalene","beta-chamigrene","cuparene","compound 1","alpha-chamigrene","widdrol","cedrol","beta-acorenol","alpha-acorenol","gamma-eudesmol","beta-eudesmol","alpha-eudesmol","cedr-8-en-13-ol","cedr-8-en-15-ol","compound 2","thujopsenal"), names_to = "ChemicalID" , values_to = "Concentration") %>% 
+  select(YearsSinceBurn, Concentration, ChemicalID)
+```
+
+#### Task 4
+
+Now that we have the dataframe cleaned we can plot it
+
+```{r}
+clean2 %>% ggplot(aes(x= YearsSinceBurn, y= Concentration))+
+  facet_wrap(factor(clean2$ChemicalID),scales= "free")+
+  geom_smooth()+
+  theme_minimal()
+```
+
+#### Task 5
+
+Now we'll make a linear model of the data and pull out just the significant terms
+```{r}
+mod <- glm(data = clean2, Concentration ~ ChemicalID:YearsSinceBurn)
+broom::tidy(mod) %>% filter(p.value <.05)
+```
+
+#### Task 6
+upload all this stuff to github... 
+there's no code to go here but I obviously did it if you are reading this
+
+
+
+
+
+
+
+
+
+
+
