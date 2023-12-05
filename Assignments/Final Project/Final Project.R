@@ -1,8 +1,0 @@
-library(tidyverse)
-library(janitor)
-library(ape)
-library(phangorn)
-library(DECIPHER)
-if (!requireNamespace("BiocManager", quietly=TRUE))
-  install.packages("BiocManager")
-BiocManager::install("DECIPHER")
